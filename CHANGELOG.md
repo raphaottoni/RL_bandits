@@ -7,5 +7,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 ## v0.1 - 2019-05-10
 
 ### Added
-- Adding class of mult-armed-bandit
+- Adding printable method for mult-armed-bandit class
+- Adding constructor for mult-armed-bandit class
 
