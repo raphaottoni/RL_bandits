@@ -39,7 +39,7 @@ class Bandit:
 
         '''
         number_of_arms = len(self.means)
-        arms_type = "statinary" if self.stationary else "static"
+        arms_type = "stationary" if self.stationary else "dynamic"
 
         return "Mult-armed bandit with " + str(number_of_arms) + " "  + arms_type  +  " arms.\n" +\
                "Reward_means = " + str(self.means) +  "\n" +\
@@ -69,7 +69,7 @@ class Bandit:
         self.arm_uses[arm_id] += 1
 
         # check if the mean should change
-        if not self.stationary and self.arm_uses[arm_id] % self.uses_mean_before_change == 0:
+        if self.stationary and self.arm_uses[arm_id] % self.uses_mean_before_change == 0:
             # changes the mean and the standard deviation
             self.means[arm_id] = np.random.normal(self.means[arm_id], 0.3, 1)[0]
             self.STDs[arm_id] = np.random.normal(self.STDs[arm_id], 0.3, 1)[0]
