@@ -9,4 +9,5 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 ### Added
 - Adding printable method for mult-armed-bandit class
 - Adding constructor for mult-armed-bandit class
+- Adding pull\_arm function for mult-armed-bandit object
 

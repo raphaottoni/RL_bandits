@@ -24,10 +24,14 @@ class Bandit:
             seed (integer):  seed used for random processes.
         '''
 
+        if len(means) != len(STDs):
+            raise Exception("the number of arms indicated by the list of reward means is not the same as indicated as the list of standard-deviation of those means")
+
         self.means = means
         self.STDs  = STDs
         self.stationary = stationary
         self.uses_mean_before_change = uses_mean_before_change
+        self.arm_uses = len(means) * [0]
         
     def __str__ (self):
         '''
@@ -40,7 +44,37 @@ class Bandit:
         return "Mult-armed bandit with " + str(number_of_arms) + " "  + arms_type  +  " arms.\n" +\
                "Reward_means = " + str(self.means) +  "\n" +\
                "Rewards_stds = " + str(self.STDs) + "\n" +\
-               "Arm mean uses before change reward mean = " + str(self.uses_mean_before_change) + "\n"
+               "Arm mean uses before change reward mean = " + str(self.uses_mean_before_change) + "\n" +\
+               "Uses of each arm " + str(self.arm_uses) + "\n"
+
+    def pull_arm(self, arm_id):
+        '''
+        Perform an pull action of <arm_id>
+
+        Args:
+            arm_id (integer): The id of the arm that will be activated
+
+        Return:
+            (float): Reward given when pulling this arm
+        '''
+
+        if arm_id >= len(self.means) or arm_id < 0:
+            raise Exception("[" + self.__name__ + "] Invalid <arm_id> to pull. The ID was " + str(arm_id) +\
+                            " which is outside the accepted range of 0-" + str(len(self.means) - 1)) 
+
+        # calculate the reward 
+        reward = np.random.normal(self.means[arm_id], self.STDs[arm_id], 1)[0]
+
+        # count the use of this arm
+        self.arm_uses[arm_id] += 1
+
+        # check if the mean should change
+        if not self.stationary and self.arm_uses[arm_id] % self.uses_mean_before_change == 0:
+            # changes the mean and the standard deviation
+            self.means[arm_id] = np.random.normal(self.means[arm_id], 0.3, 1)[0]
+            self.STDs[arm_id] = np.random.normal(self.STDs[arm_id], 0.3, 1)[0]
+
+        return reward
 
 def main():
     '''
@@ -63,6 +97,58 @@ def main():
     args = parser.parse_args()
 
     bandit = Bandit(args.means, args.stand_deviations, args.stationary, args.uses_mean_before_change)
+    print(bandit)
+    print(bandit.pull_arm(0))
+    print(bandit.pull_arm(0))
+    print(bandit.pull_arm(0))
+    print(bandit.pull_arm(0))
+    print(bandit.pull_arm(0))
+    print(bandit.pull_arm(0))
+    print(bandit.pull_arm(0))
+    print(bandit.pull_arm(0))
+    print(bandit.pull_arm(0))
+    print(bandit.pull_arm(0))
+    print(bandit.pull_arm(0))
+    print(bandit.pull_arm(0))
+    print(bandit.pull_arm(0))
+    print(bandit.pull_arm(0))
+    print(bandit.pull_arm(0))
+    print(bandit.pull_arm(0))
+    print(bandit.pull_arm(0))
+    print(bandit.pull_arm(0))
+    print(bandit.pull_arm(0))
+    print(bandit.pull_arm(0))
+    print(bandit.pull_arm(0))
+    print(bandit.pull_arm(0))
+    print(bandit.pull_arm(0))
+    print(bandit.pull_arm(0))
+    print(bandit.pull_arm(0))
+    print(bandit.pull_arm(0))
+    print(bandit.pull_arm(0))
+    print(bandit.pull_arm(0))
+    print(bandit.pull_arm(0))
+    print(bandit.pull_arm(0))
+    print(bandit.pull_arm(0))
+    print(bandit.pull_arm(0))
+    print(bandit.pull_arm(0))
+    print(bandit.pull_arm(0))
+    print(bandit.pull_arm(0))
+    print(bandit.pull_arm(0))
+    print(bandit.pull_arm(0))
+    print(bandit.pull_arm(0))
+    print(bandit.pull_arm(0))
+    print(bandit.pull_arm(0))
+    print(bandit.pull_arm(0))
+    print(bandit.pull_arm(0))
+    print(bandit.pull_arm(0))
+    print(bandit.pull_arm(0))
+    print(bandit.pull_arm(0))
+    print(bandit.pull_arm(0))
+    print(bandit.pull_arm(0))
+    print(bandit.pull_arm(0))
+    print(bandit.pull_arm(0))
+    print(bandit.pull_arm(0))
+    print(bandit.pull_arm(1))
     print(bandit)
 
 
