@@ -28,6 +28,7 @@ class Bandit:
         if len(means) != len(STDs):
             raise Exception("the number of arms indicated by the list of reward means is not the same as indicated as the list of standard-deviation of those means")
     
+        # Set the tracking variables
         self.means = means
         self.STDs  = STDs
         self.stationary = False if non_stationary else True
@@ -36,6 +37,10 @@ class Bandit:
         self.total_arms_uses = 0
         self.arms_rewards = defaultdict(list)
         self.acumulative_reward = 0
+        self.acumulative_optimal_reward = 0
+
+        #set the seed
+        np.random.seed(seed)
         
     def __str__ (self):
         '''
@@ -50,7 +55,28 @@ class Bandit:
                "Rewards_stds = " + str(self.STDs) + "\n" +\
                "Arm mean uses before change reward mean = " + str(self.uses_mean_before_change) + "\n" +\
                "Uses of each arm " + str(self.arm_uses) + "\n" +\
-               "Accumalated reward with " + str(self.total_arms_uses) + " now:" + str(self.acumulative_reward) + "\n"
+               "Accumalated reward with " + str(self.total_arms_uses) + " now:" + str(self.acumulative_reward) + "\n" +\
+               "The simulated optimal reward with " + str(self.total_arms_uses) + " now:" + str(self.acumulative_optimal_reward) + "\n"
+
+    def pretend_pull_optimal_arm(self):
+        '''
+        This function always pull the arm with the highest mean. It serves as a optimal threshold
+        '''
+
+        # Saves the seed state before pull (to not interfer with other random processess )
+        random_state = np.random.get_state()
+
+        # Finds the id of the best arm
+        best_arm_id = self.means.index(max(self.means))
+
+        # calculate the optimal reward 
+        reward = np.random.normal(self.means[best_arm_id], self.STDs[best_arm_id], 1)[0]
+
+        # Return to the previous random state
+        np.random.set_state(random_state)
+        
+        # Acumulate the pretend reward
+        self.acumulative_optimal_reward += reward
 
     def pull_arm(self, arm_id):
         '''
@@ -78,11 +104,13 @@ class Bandit:
         # Save history
         self.arms_rewards[arm_id].append(reward)
 
+        # Pretend what it would do if the best arm was selected
+        self.pretend_pull_optimal_arm()
+
         # check if the mean should change
         if not self.stationary and self.arm_uses[arm_id] % self.uses_mean_before_change == 0:
-            # changes the mean and the standard deviation
+            # changes the mean 
             self.means[arm_id] = np.random.normal(self.means[arm_id], 0.3, 1)[0]
-            self.STDs[arm_id] = np.random.normal(self.STDs[arm_id], 0.3, 1)[0]
 
         return reward
 
@@ -109,60 +137,8 @@ def main():
     bandit = Bandit(args.means, args.stand_deviations, args.non_stationary, args.uses_mean_before_change)
     print(bandit)
     print(bandit.pull_arm(0))
-    print(bandit.pull_arm(0))
-    print(bandit.pull_arm(0))
-    print(bandit.pull_arm(0))
-    print(bandit.pull_arm(0))
-    print(bandit.pull_arm(0))
-    print(bandit.pull_arm(0))
-    print(bandit.pull_arm(0))
-    print(bandit.pull_arm(0))
-    print(bandit.pull_arm(0))
-    print(bandit.pull_arm(0))
-    print(bandit.pull_arm(0))
-    print(bandit.pull_arm(0))
-    print(bandit.pull_arm(0))
-    print(bandit.pull_arm(0))
-    print(bandit.pull_arm(0))
-    print(bandit.pull_arm(0))
-    print(bandit.pull_arm(0))
-    print(bandit.pull_arm(0))
-    print(bandit.pull_arm(0))
-    print(bandit.pull_arm(0))
-    print(bandit.pull_arm(0))
-    print(bandit.pull_arm(0))
-    print(bandit.pull_arm(0))
-    print(bandit.pull_arm(0))
-    print(bandit.pull_arm(0))
-    print(bandit.pull_arm(0))
-    print(bandit.pull_arm(0))
-    print(bandit.pull_arm(0))
-    print(bandit.pull_arm(0))
-    print(bandit.pull_arm(0))
-    print(bandit.pull_arm(0))
-    print(bandit.pull_arm(0))
-    print(bandit.pull_arm(0))
-    print(bandit.pull_arm(0))
-    print(bandit.pull_arm(0))
-    print(bandit.pull_arm(0))
-    print(bandit.pull_arm(0))
-    print(bandit.pull_arm(0))
-    print(bandit.pull_arm(0))
-    print(bandit.pull_arm(0))
-    print(bandit.pull_arm(0))
-    print(bandit.pull_arm(0))
-    print(bandit.pull_arm(0))
-    print(bandit.pull_arm(0))
-    print(bandit.pull_arm(0))
-    print(bandit.pull_arm(0))
-    print(bandit.pull_arm(0))
-    print(bandit.pull_arm(0))
-    print(bandit.pull_arm(0))
     print(bandit.pull_arm(1))
     print(bandit)
-
-
-
 
 
 if __name__ == '__main__':
