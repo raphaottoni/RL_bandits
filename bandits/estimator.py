@@ -9,7 +9,7 @@ class Estimator:
 
     """
 
-    def __init__(self, n_arms = 10, non_stationary_arms = False, step_size = 0.1):
+    def __init__(self, n_arms = 10, non_stationary_arms = False, initial_values = 0.0, step_size = 0.1):
         '''
         Class constructor
 
@@ -19,19 +19,21 @@ class Estimator:
 
             non_stationary_arms (Boolean): if False the estimator will consider that all arms have a fixed gaussian distribution of reward.
 
+            initial_values (float): the initial mean value of each arm. Default: 0.0
+
             step_size (Boolean): the ratio wich the new rewards will be pondered higher than the old ones. It is only used when <stationary_arms> is False.
 
         '''
 
         if n_arms <= 0:
-            raise Exception("[Estimator] The number of armas cannot be negative or zero. The <n_arms> passed to constructor was {}".format(n_arms))
+            raise Exception("[Estimator] The number of arms cannot be negative or zero. The <n_arms> passed to constructor was {}".format(n_arms))
     
         # Set the tracking variables
         self.n_arms  = n_arms
         self.stationary = False if non_stationary_arms else True
         self.step_size = step_size
         self.arms_uses = n_arms * [0]
-        self.current_estimations_each_arm =  n_arms * [0]
+        self.current_estimations_each_arm =  n_arms * [initial_values]
         
     def __str__ (self):
         '''
@@ -58,6 +60,9 @@ class Estimator:
             # Estimate the new mean of the arm
             self.current_estimations_each_arm[arm_id] = self.current_estimations_each_arm[arm_id] + (reward - self.current_estimations_each_arm[arm_id])/self.arms_uses[arm_id]
         else:
+
+            # save the information that the arm was pulled
+            self.arms_uses[arm_id] += 1
 
             # estimate the new mean of the arm
             self.current_estimations_each_arm[arm_id] = self.current_estimations_each_arm[arm_id] + self.step_size * (reward - self.current_estimations_each_arm[arm_id])
