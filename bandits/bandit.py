@@ -8,7 +8,7 @@ class Bandit:
 
     """
 
-    def __init__(self, means, STDs, non_stationary = False, uses_mean_before_change = 30, seed = 42):
+    def __init__(self, means, STDs, non_stationary = False, uses_mean_before_change = 30, standard_deviation_of_change = 5.0, seed = 42):
         '''
         Class constructor
 
@@ -21,6 +21,8 @@ class Bandit:
             non-stationary (Boolean): if True the mean of the gaussian reward modeling will change, it will remain stationary otherwise
 
             uses_before_change (integer): The mean of how many times the arm will be used before its gaussian reward modeling change.
+
+            standard_deviation_of_change (float): The standard deviation that will be used when the mean of the arm gaussian reward need to be changed.
 
             seed (integer):  seed used for random processes.
         '''
@@ -38,6 +40,7 @@ class Bandit:
         self.arms_rewards = defaultdict(list)
         self.acumulative_reward = 0
         self.acumulative_optimal_reward = 0
+        self.standard_deviation_of_change = standard_deviation_of_change
 
         #set the seed
         np.random.seed(seed)
@@ -48,7 +51,7 @@ class Bandit:
 
         '''
         number_of_arms = len(self.means)
-        arms_type = "STATIONARY" if self.stationary else "DYNAMIC"
+        arms_type = "STATIONARY" if self.stationary else "NON-STATIONARY"
 
         return "Mult-armed bandit with " + str(number_of_arms) + " "  + arms_type  +  " arms.\n" +\
                "Reward_means = " + str(self.means) +  "\n" +\
@@ -63,17 +66,12 @@ class Bandit:
         This function always pull the arm with the highest mean. It serves as a optimal threshold
         '''
 
-        # Saves the seed state before pull (to not interfer with other random processess )
-        random_state = np.random.get_state()
-
         # Finds the id of the best arm
         best_arm_id = self.means.index(max(self.means))
 
         # calculate the optimal reward 
         reward = np.random.normal(self.means[best_arm_id], self.STDs[best_arm_id], 1)[0]
 
-        # Return to the previous random state
-        np.random.set_state(random_state)
         
         # Acumulate the pretend reward
         self.acumulative_optimal_reward += reward
@@ -93,6 +91,9 @@ class Bandit:
             raise Exception("[" + self.__name__ + "] Invalid <arm_id> to pull. The ID was " + str(arm_id) +\
                             " which is outside the accepted range of 0-" + str(len(self.means) - 1)) 
 
+        # Saves the seed state before pull (to not interfer with other random processess )
+        random_state = np.random.get_state()
+
         # calculate the reward 
         reward = np.random.normal(self.means[arm_id], self.STDs[arm_id], 1)[0]
 
@@ -104,23 +105,26 @@ class Bandit:
         # Save history
         self.arms_rewards[arm_id].append(reward)
 
+        # Return to the previous random state
+        np.random.set_state(random_state)
+
         # Pretend what it would do if the best arm was selected
         self.pretend_pull_optimal_arm()
 
         # check if the mean should change
         if not self.stationary and self.arm_uses[arm_id] % self.uses_mean_before_change == 0:
             # changes the mean 
-            self.means[arm_id] = np.random.normal(self.means[arm_id], 0.3, 1)[0]
+            self.means[arm_id] = np.random.normal(self.means[arm_id], self.standard_deviation_of_change, 1)[0]
 
         return reward
 
 def main():
     '''
-     Main function to run Data Preparation as a standalone script.
-     '''
+    Main
+    '''
 
     # Argument Parser
-    parser = argparse.ArgumentParser(description='Data spark.')
+    parser = argparse.ArgumentParser(description='Mult-armed Bandit.')
 
     parser.add_argument('-ms', '--means', type=float, nargs='+', required=True,
                         help="list of all arms reward means")
@@ -128,13 +132,15 @@ def main():
                         help="list of all arms standard deviations")
     parser.add_argument('-ns', '--non-stationary', action='store_true',
                         help="if set true, the mean rewards of each arm will change over usage.")
+    parser.add_argument('-cstd', '--standard_deviation_of_change', default=5.0, type=float,
+                        help="The stand deviation of the gaussian distribution when changing the initial distribution regarding <means> when <non-stationary> was set to True")
     parser.add_argument('-umbc', '--uses_mean_before_change', type=int,
                         help="The mean number of times a arm will be used before change its reward function", default = 30)
 
     # initialize parser
     args = parser.parse_args()
 
-    bandit = Bandit(args.means, args.stand_deviations, args.non_stationary, args.uses_mean_before_change)
+    bandit = Bandit(args.means, args.stand_deviations, args.non_stationary, args.uses_mean_before_change, args.standard_deviation_of_change)
     print(bandit)
     print(bandit.pull_arm(0))
     print(bandit.pull_arm(1))

@@ -11,3 +11,5 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 - Adding constructor for mult-armed-bandit class
 - Adding pull\_arm function for mult-armed-bandit object
 - Adding function that always choose the best arm to pull
+- Adding class of estimators for mult-armed-bandits
+- implemented two ways to track means of arm rewards (stationary and non-stationary)
