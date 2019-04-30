@@ -72,6 +72,7 @@ class Bandit:
 
         # count the use of this arm
         self.arm_uses[arm_id] += 1
+        self.total_arms_uses += 1
         self.acumulative_reward += reward
 
         # Save history
