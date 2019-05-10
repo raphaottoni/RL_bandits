@@ -14,3 +14,4 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 - Adding class of estimators for mult-armed-bandits
 - implemented two ways to track means of arm rewards (stationary and non-stationary)
 - implemented a greedy aprouch to solve the mult-armed bandit stationary or not
+- implemented a UCB1 aprouch to solve the mult-armed bandit stationary or not
