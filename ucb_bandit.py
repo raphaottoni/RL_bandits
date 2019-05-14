@@ -12,7 +12,7 @@ class UCB1Bandit:
 
     """
 
-    def __init__(self, n_arms = 10, non_stationary_arms = False, step_size = 0.1, degree_of_exploration  = 1.0):
+    def __init__(self, n_arms = 10, non_stationary_arms = False,  degree_of_exploration  = 1.0):
         '''
         Class constructor
 
@@ -21,8 +21,6 @@ class UCB1Bandit:
             n_arms (integer): How many arms it will track
 
             non_stationary_arms (Boolean): if False the estimator will consider that all arms have a fixed gaussian distribution of reward.
-
-            step_size (Boolean): the ratio wich the new rewards will be pondered higher than the old ones. It is only used when <stationary_arms> is False.
 
             degree_of_exploration (float): The number that will multiple the upper bound of the UCB1 uncertaintie part of the formula (the higher, the more exploration)
 
@@ -127,7 +125,7 @@ def main():
     # initialize parser
     args = parser.parse_args()
 
-    ucb1_bandit = UCB1Bandit(args.n_arms, args.non_stationary, 0.1, args.degree_exploration)
+    ucb1_bandit = UCB1Bandit(args.n_arms, args.non_stationary, args.degree_exploration)
 
     print(ucb1_bandit.bandit)
     print(ucb1_bandit.estimator)
